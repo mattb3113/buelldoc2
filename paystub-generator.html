@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paystub Generator Pro - Buell Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        /* Modern CSS Reset */
+        *, *::before, *::after { box-sizing: border-box; }
+        * { margin: 0; }
+        html, body { height: 100%; }
+        body { line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        img, picture, video, canvas, svg { display: block; max-width: 100%; }
+        input, button, textarea, select { font: inherit; }
+        p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+
+        /* Custom Properties for a Modern Theme */
+        :root {
+            --primary-color: #0052cc;
+            --primary-light: #e6f0ff;
+            --secondary-color: #172b4d;
+            --accent-color: #4cceac;
+            --background-color: #f4f5f7;
+            --white-color: #ffffff;
+            --border-color: #dfe1e6;
+            --shadow-color-light: rgba(9, 30, 66, 0.08);
+            --shadow-color-medium: rgba(9, 30, 66, 0.15);
+            --text-color: #42526e;
+            --heading-color: #172b4d;
+            --danger-color: #de350b;
+        }
+
+        /* General Body Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 15px;
+        }
+
+        /* Main App Container and Layout */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 480px 1fr;
+            }
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white-color);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px var(--shadow-color-light);
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .header .logo {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Card styles for form and preview */
+        .card {
+            background: var(--white-color);
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color-light);
+            height: fit-content;
+        }
+
+        .card-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white-color);
+            border-radius: 12px 12px 0 0;
+            margin: -28px -28px 28px -28px;
+        }
+
+        .card-header h2 { 
+            margin: 0; 
+            font-family: 'Lexend', sans-serif; 
+            font-size: 1.5rem; 
+            color: var(--heading-color);
+        }
+
+        /* Form Styles */
+        .form-section h3 {
+            font-family: 'Lexend', sans-serif;
+            color: var(--heading-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 24px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .form-section h3:first-child { margin-top: 0; }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--heading-color);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--white-color);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .disclaimer {
+            padding: 12px;
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.9em;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        #tax-year-disclaimer {
+            background-color: #fff8e6;
+            border-left-color: #ffc107;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #0041a3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color-medium);
+        }
+
+        .btn-secondary {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover { background-color: #d9e7ff; }
+
+        /* Dynamic Fields (Earnings/Deductions) */
+        .dynamic-field-group { display: flex; flex-direction: column; gap: 10px; }
+        .dynamic-field { display: flex; gap: 10px; align-items: center; }
+        .dynamic-field-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 100px 100px 30px; 
+            gap: 10px; 
+            align-items: center;
+        }
+
+        .btn-remove {
+            background: none; 
+            border: none; 
+            color: var(--danger-color); 
+            cursor: pointer;
+            width: 30px; 
+            height: 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold; 
+            font-size: 1.2rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-remove:hover {
+            background-color: rgba(222, 53, 11, 0.1);
+        }
+
+        /* Preview Area */
+        .preview-nav { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+        }
+
+        .preview-nav-status { 
+            font-weight: 600; 
+            color: var(--heading-color); 
+        }
+
+        #previews-container .paystub-wrapper { display: none; }
+        #previews-container .paystub-wrapper.active { display: block; }
+
+        /* Paystub Template Styling for Professionalism */
+        #paystub-template, .paystub-content {
+            position: relative;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            padding: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .paystub-header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 15px; 
+        }
+
+        .paystub-header h3 { 
+            font-size: 24px !important; 
+            margin-bottom: 5px !important; 
+            color: #1a1a1a !important; 
+            font-weight: 700;
+        }
+
+        .paystub-header p { 
+            color: #444 !important; 
+            margin: 3px 0 !important; 
+            font-size: 13px !important; 
+        }
+
+        .paystub-header .statement-title { 
+            background-color: #f0f4f7 !important; 
+            padding: 8px 15px !important; 
+            border-radius: 4px !important; 
+            display: inline-block !important; 
+            font-weight: 800 !important; 
+            font-size: 1.1rem !important; 
+            letter-spacing: 1.5px !important; 
+            color: #172b4d !important; 
+            margin-top: 15px !important; 
+            text-transform: uppercase !important; 
+            border: 1px solid #e0e0e0 !important; 
+        }
+
+        .info-grid {
+            background-color: #fafbfc !important; 
+            border: 1px solid #eaeaea !important; 
+            border-radius: 4px !important; 
+            padding: 15px !important; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-grid div { 
+            font-size: 13px; 
+            line-height: 1.8; 
+        }
+
+        .info-grid strong { 
+            color: #172b4d !important; 
+            font-weight: 600 !important; 
+            margin-bottom: 3px !important; 
+            display: block;
+        }
+
+        .info-grid span { 
+            color: #555; 
+        }
+
+        .tables-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 28px; 
+        }
+
+        @media (min-width: 600px) {
+            .tables-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            #earnings-section { 
+                grid-column: 1 / -1; 
+            }
+        }
+
+        .paystub-table { 
+            width: 100% !important; 
+            border-collapse: collapse !important; 
+            margin: 15px 0 !important; 
+            font-size: 12px;
+        }
+
+        .paystub-table caption { 
+            text-align: left !important; 
+            padding-bottom: 8px !important; 
+            color: #172b4d !important; 
+            font-weight: 700 !important; 
+            border-bottom: 1px solid #e0e0e0 !important; 
+            margin-bottom: 8px !important; 
+            font-size: 14px;
+        }
+
+        .paystub-table th, .paystub-table td { 
+            padding: 8px 10px !important; 
+            text-align: left !important; 
+            border-bottom: 1px dashed #e9e9e9 !important; 
+        } 
+
+        .paystub-table thead th { 
+            background-color: #f5f7f9 !important; 
+            font-weight: 700 !important; 
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .paystub-table tbody tr:last-child td { 
+            border-bottom: none !important; 
+        } 
+
+        .paystub-table .text-right { 
+            text-align: right !important; 
+        }
+
+        .paystub-table tfoot td { 
+            font-weight: 700 !important; 
+            background-color: #f0f4f7 !important; 
+            border-top: 2px solid #d0d0d0 !important; 
+            font-size: 13px !important;
+            color: #172b4d !important;
+        }
+
+        /* Summary Bar Styling */
+        .paystub-summary {
+            background: linear-gradient(135deg, #1a73e8, #0069d9) !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            margin-top: 25px !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .summary-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            gap: 20px !important;
+            text-align: center;
+        }
+
+        .summary-item {
+            padding: 10px;
+        }
+
+        .summary-item strong { 
+            display: block !important;
+            opacity: 0.9 !important;
+            font-size: 12px !important;
+            margin-bottom: 8px !important; 
+            text-transform: uppercase !important; 
+            letter-spacing: 1px !important; 
+            font-weight: 600 !important;
+        }
+
+        .summary-item span { 
+            font-size: 20px !important; 
+            font-weight: 700 !important; 
+            color: #ffffff !important; 
+            display: block;
+        }
+
+        #net-pay-display { 
+            font-size: 28px !important; 
+            font-weight: 800 !important; 
+            color: #4cceac !important; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; 
+        }
+
+        /* Footer */
+        .footer { 
+            text-align: center; 
+            margin-top: 30px; 
+            padding: 20px; 
+            color: #8894a7; 
+            font-size: 0.9rem; 
+        }
+
+        .footer a { 
+            color: var(--primary-color); 
+            text-decoration: none; 
+        }
+
+        /* Print media queries for better PDF formatting */
+        @media print {
+            body { 
+                margin: 0 !important; 
+                background: white !important;
+            }
+            
+            .paystub-content, #paystub-template {
+                padding: 15px !important;
+                max-width: none !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
+            }
+            
+            .paystub-wrapper { 
+                page-break-inside: avoid !important; 
+                padding: 15px !important;
+                box-sizing: border-box !important;
+            }
+            
+            .paystub-table {
+                font-size: 10px !important;
+                page-break-inside: avoid !important; 
+            }
+            
+            .paystub-table th, .paystub-table td { 
+                padding: 6px 8px !important; 
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+            }
+            
+            .summary-item strong { 
+                font-size: 10px !important; 
+            }
+            
+            .summary-item span { 
+                font-size: 14px !important; 
+            }
+
+            #net-pay-display {
+                font-size: 18px !important;
+            }
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-color);
+        }
+
+        .error {
+            background-color: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .card-header {
+                margin: -20px -20px 20px -20px;
+                padding: 15px 20px;
+            }
+            
+            .dynamic-field-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 15px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">Buell Docs</div>
+        </header>
+
+        <!-- Main Content Layout -->
+        <main class="main-layout">
+            <!-- Form Section -->
+            <aside class="card form-section">
+                <form id="paystub-form">
+                    <!-- Income Calculator -->
+                    <section>
+                        <h3>Income Calculator</h3>
+                        <div class="form-group">
+                            <label for="incomeType">Calculate Pay From</label>
+                            <select id="incomeType" name="incomeType">
+                                <option value="manual" selected>Manual Entry Below</option>
+                                <option value="annual">Annual Salary</option>
+                                <option value="monthly">Monthly Salary</option>
+                                <option value="weekly">Weekly Salary</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="income-amount-group" style="display: none;">
+                            <label for="incomeAmount">Amount</label>
+                            <input type="number" id="incomeAmount" name="incomeAmount" placeholder="e.g., 65000" step="0.01">
+                        </div>
+                        <div class="disclaimer">
+                            <strong>Disclaimer:</strong> This tool calculates gross pay. The final net pay will be lower after taxes and other deductions are withheld.
+                        </div>
+                    </section>
+
+                    <!-- Batch Generation -->
+                    <section>
+                        <h3>Batch Generation</h3>
+                        <div class="form-group">
+                            <label for="numPaystubs">Number of Paystubs to Generate (1-8)</label>
+                            <input type="number" id="numPaystubs" name="numPaystubs" min="1" max="8" value="1">
+                        </div>
+                        <div id="paystub-dates-container">
+                            <!-- Paystub date inputs will be generated here by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Business Information -->
+                    <section>
+                        <h3>Business Information</h3>
+                        <div class="form-group">
+                            <label for="businessName">Business Name</label>
+                            <input type="text" id="businessName" value="Buell Industries, Inc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessAddress">Business Address</label>
+                            <input type="text" id="businessAddress" value="123 Innovation Drive, Tech City, 54321">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessEin">Company EIN/FEIN</label>
+                            <input type="text" id="businessEin" placeholder="XX-XXXXXXX" value="12-3456789">
+                        </div>
+                        <div class="form-group">
+                            <label for="checkNumber">Check Number</label>
+                            <input type="text" id="checkNumber" name="checkNumber" value="1001">
+                        </div>
+                        <div class="form-group">
+                            <label for="routingNumber">Routing Number</label>
+                            <input type="text" id="routingNumber" name="routingNumber" value="000000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountNumber">Account Number</label>
+                            <input type="text" id="accountNumber" name="accountNumber" value="1234567890">
+                        </div>
+                    </section>
+
+                    <!-- Employee Information -->
+                    <section>
+                        <h3>Employee Information</h3>
+                        <div class="form-group">
+                            <label for="employeeName">Employee Name</label>
+                            <input type="text" id="employeeName" value="Jane Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeAddress">Employee Address</label>
+                            <input type="text" id="employeeAddress" value="456 Home Street, Suburbia, 12345">
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeId">Employee ID</label>
+                            <input type="text" id="employeeId" value="EMP-007">
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeSsn">SSN (Optional, Last 4)</label>
+                            <input type="text" id="employeeSsn" placeholder="XXX-XX-1234" value="XXX-XX-5678">
+                        </div>
+                        <div class="form-group">
+                            <label for="initialYtdGross">Initial YTD Gross Pay (before this period)</label>
+                            <input type="number" id="initialYtdGross" name="initialYtdGross" step="0.01" value="0">
+                        </div>
+                    </section>
+
+                    <!-- Pay Details -->
+                    <section>
+                        <h3>Pay Details</h3>
+                        <div class="form-group">
+                            <label for="payPeriod">Pay Frequency</label>
+                            <select id="payPeriod" name="payPeriod">
+                                <option value="weekly">Weekly</option>
+                                <option value="bi-weekly" selected>Bi-Weekly</option>
+                                <option value="semi-monthly">Semi-monthly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payRate">Pay Rate (per hour or salary per pay period)</label>
+                            <input type="number" id="payRate" name="payRate" step="0.01" value="31.25">
+                        </div>
+                    </section>
+
+                    <!-- Earnings -->
+                    <section>
+                        <h3>Earnings</h3>
+                        <div class="dynamic-field-group" id="earnings-container">
+                            <div class="form-group dynamic-field-grid">
+                                <label style="margin-bottom: 0;">Description</label>
+                                <label style="margin-bottom: 0;">Rate</label>
+                                <label style="margin-bottom: 0;">Hours</label>
+                                <span></span>
+                            </div>
+                        </div>
+                        <button type="button" id="add-earning" class="btn btn-secondary">+ Add Earning</button>
+                    </section>
+
+                    <!-- Deductions -->
+                    <section>
+                        <h3>Deductions</h3>
+                        <div class="dynamic-field-group" id="deductions-container">
+                            <div class="form-group dynamic-field-grid">
+                                <label style="margin-bottom: 0;">Description</label>
+                                <label style="margin-bottom: 0;">Current</label>
+                                <label style="margin-bottom: 0;">YTD</label>
+                                <span></span>
+                            </div>
+                        </div>
+                        <button type="button" id="add-deduction" class="btn btn-secondary">+ Add Deduction</button>
+                    </section>
+
+                    <!-- Tax Information -->
+                    <section>
+                        <h3>Tax Information</h3>
+                        <div class="form-group">
+                            <label for="taxYear">Tax Year</label>
+                            <select id="taxYear" name="taxYear">
+                                <option value="2025">2025</option>
+                                <option value="2024" selected>2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                        <div class="disclaimer" id="tax-year-disclaimer" style="display: none;">
+                            <strong>Note:</strong> 2025 state tax data is currently a placeholder using 2024 figures. Actual 2025 state tax rates may vary. Federal rates are updated.
+                        </div>
+                        <div class="form-group">
+                            <label for="filingStatus">Federal Filing Status</label>
+                            <select id="filingStatus" name="filingStatus">
+                                <option value="single">Single</option>
+                                <option value="married">Married Filing Jointly</option>
+                                <option value="hoh">Head of Household</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="additionalFederalWithholding">Additional Federal Withholding (per period)</label>
+                            <input type="number" id="additionalFederalWithholding" name="additionalFederalWithholding" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <select id="state" name="state">
+                                <!-- States will be populated by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" id="nj-filing-status-group" style="display:none;">
+                            <label for="njFilingStatus">New Jersey Filing Status</label>
+                            <select id="njFilingStatus" name="njFilingStatus">
+                                <option value="single">Single</option>
+                                <option value="married">Married/Civil Union Partner Filing Jointly</option>
+                                <option value="mfs">Married/Civil Union Partner Filing Separately</option>
+                                <option value="hoh">Head of Household</option>
+                                <option value="qw">Qualifying Widow(er)</option>
+                            </select>
+                        </div>
+                    </section>
+                </form>
+            </aside>
+
+            <!-- Preview Section -->
+            <section class="preview-section-wrapper">
+                <div class="card-header">
+                    <h2>Paystub Preview</h2>
+                    <button id="download-pdf" class="btn btn-primary">Download PDF</button>
+                </div>
+                <div class="card">
+                    <div class="preview-nav">
+                        <button id="prev-stub" class="btn">&lt; Previous</button>
+                        <span id="stub-nav-status" class="preview-nav-status">Stub 1 of 1</span>
+                        <button id="next-stub" class="btn">Next &gt;</button>
+                    </div>
+                    <div id="previews-container">
+                        <!-- Paystub previews will be generated here by JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Paystub Generator Pro. A <a href="#">Buell Docs</a> creation.</p>
+        </footer>
+    </div>
+
+    <!-- Hidden template that will be cloned for each paystub -->
+    <div id="paystub-template" style="display: none;">
+        <div class="paystub-content">
+            <div class="paystub-header">
+                <h3 data-id="businessName"></h3>
+                <p data-id="businessAddress"></p>
+                <p data-id="businessEin"></p>
+                <p class="statement-title">EARNINGS STATEMENT</p>
+            </div>
+            
+            <div class="info-grid">
+                <div>
+                    <strong>Employee:</strong>
+                    <span data-id="employeeName"></span><br>
+                    <span data-id="employeeAddress"></span>
+                </div>
+                <div>
+                    <strong>Employee ID:</strong> <span data-id="employeeId"></span><br>
+                    <strong>SSN:</strong> <span data-id="employeeSsn"></span><br>
+                    <strong>Pay Date:</strong> <span data-id="payDate"></span><br>
+                    <strong>Pay Period:</strong> <span data-id="payPeriodRange"></span>
+                </div>
+                <div>
+                    <strong>Check Number:</strong> <span data-id="checkNumber"></span>
+                </div>
+                <div>
+                    <strong>Routing Number:</strong> <span data-id="routingNumber"></span><br>
+                    <strong>Account Number:</strong> <span data-id="accountNumber"></span>
+                </div>
+            </div>
+            
+            <div class="tables-grid">
+                <div id="earnings-section">
+                    <table class="paystub-table" data-id="earnings-table">
+                        <caption>Earnings</caption>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-right">Rate</th>
+                                <th class="text-right">Hours</th>
+                                <th class="text-right">Current</th>
+                                <th class="text-right">YTD</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">Gross Pay</td>
+                                <td class="text-right" data-id="grossPay"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div>
+                    <table class="paystub-table" data-id="deductions-table">
+                        <caption>Deductions</caption>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-right">Current</th>
+                                <th class="text-right">YTD</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Total Deductions</td>
+                                <td class="text-right" data-id="totalDeductions"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div>
+                    <table class="paystub-table" data-id="taxes-table">
+                        <caption>Taxes</caption>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-right">Current</th>
+                                <th class="text-right">YTD</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Total Taxes</td>
+                                <td class="text-right" data-id="totalTaxes"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="paystub-summary">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <strong>GROSS PAY</strong>
+                        <span data-id="summaryGrossPay">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>TOTAL DEDUCTIONS</strong>
+                        <span data-id="summaryTotalDeductions">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>TOTAL TAXES</strong>
+                        <span data-id="summaryTotalTaxes">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>NET PAY</strong>
+                        <span data-id="summaryNetPay" id="net-pay-display">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Complete JavaScript implementation
+    (function() {
+        'use strict';
+        
+        const BuellDocsApp = {};
+
+        // Tax tables data store
+        const taxTablesData = {
+            "2023": {
+                "federal": {
+                    "single": {
+                        "brackets": [
+                            {"rate": 0.10, "upto": 11000},
+                            {"rate": 0.12, "upto": 44725},
+                            {"rate": 0.22, "upto": 95375},
+                            {"rate": 0.24, "upto": 182100},
+                            {"rate": 0.32, "upto": 231250},
+                            {"rate": 0.35, "upto": 578125},
+                            {"rate": 0.37, "upto": Infinity}
+                        ],
+                        "deduction": 13850
+                    },
+                    "married": {
+                        "brackets": [
+                            {"rate": 0.10, "upto": 22000},
+                            {"rate": 0.12, "upto": 89450},
+                            {"rate": 0.22, "upto": 190750},
+                            {"rate": 0.24, "upto": 364200},
+                            {"rate": 0.32, "upto": 462500},
+                            {"rate": 0.35, "upto": 693750},
+                            {"rate": 0.37, "upto": Infinity}
+                        ],
+                        "deduction": 27700
+                    },
+                    "hoh": {
+                        "brackets": [
+                            {"rate": 0.10, "upto": 15700},
+                            {"rate": 0.12, "upto": 59850},
+                            {"rate": 0.22, "upto": 95350},
+                            {"rate": 0.24, "upto": 182100},
+                            {"rate": 0.32, "upto": 231250},
+                            {"rate": 0.35, "upto": 578100},
+                            {"rate": 0.37, "upto": Infinity}
+                        ],
+                        "deduction": 20800
+                    }
+                },
+                "fica": {
+                    "social_security_rate": 0.062,
+                    "social_security_limit": 160200,
+                    "medicare_rate": 0.0145
+                }
+            },
+            "2024": {
+                "federal": {
+                    "single": {
+                        "brackets": [
+                            {"rate": 0.10, "upto": 11600},
+                            {"rate": 0.12, "upto": 47150},
+                            {"rate": 0.22, "upto": 100525},
+                            {"rate": 0.24, "upto": 191950},
+                            {"rate": 0.32, "upto": 243725},
+                            {"rate": 0.35, "upto": 609350},
+                            {"rate": 0.37, "upto": Infinity}
+                        ],
+                        "deduction": 14600
+                    },
+                    "married": {
+                        "brackets": [
+                            {"rate": 0.10, "upto": 23200},
+                            {"rate": 0.12, "upto": 94300},
+                            {"rate": 0.22, "upto": 201050},
+                            {"rate": 0.24, "upto": 383900},
+                            {"rate": 0.32, "upto": 487450},
+                            {"rate": 0.35, "upto": 731200},
+                            {"rate": 0.37, "upto": Infinity}
+                        ],
+                        "deduction": 29200
+                    },
+                    "hoh": {
+                        "brackets": [
+                            {"rate": 0.10, "upto": 16550},
+                            {"rate": 0.12, "upto": 63100},
+                            {"rate": 0.22, "upto": 100500},
+                            {"rate": 0.24, "upto": 191950},
+                            {"rate": 0.32, "upto": 243700},
+                            {"rate": 0.35, "upto": 609350},
+                            {"rate": 0.37, "upto": Infinity}
+                        ],
+                        "deduction": 21900
+                    }
+                },
+                "fica": {
+                    "social_security_rate": 0.062,
+                    "social_security_limit": 168600,
+                    "medicare_rate": 0.0145,
+                    "additional_medicare_thresholds": {
+                        "single": 200000,
+                        "hoh": 200000,
+                        "married": 250000,
+                        "mfs": 125000
+                    }
+                },
+                "states": {
+                    "AL": {"name": "Alabama", "single": {"brackets": [{"rate": 0.02, "upto": 500}, {"rate": 0.04, "upto": 3000}, {"rate": 0.05, "upto": Infinity}]}},
+                    "AK": {"name": "Alaska", "single": {"brackets": []}},
+                    "AZ": {"name": "Arizona", "single": {"brackets": [{"rate": 0.025, "upto": Infinity}]}},
+                    "AR": {"name": "Arkansas", "single": {"brackets": [{"rate": 0.02, "upto": 24299}, {"rate": 0.04, "upto": 87000}, {"rate": 0.049, "upto": Infinity}]}},
+                    "CA": {"name": "California", "single": {"brackets": [{"rate": 0.01, "upto": 10412}, {"rate": 0.02, "upto": 24684}, {"rate": 0.04, "upto": 38959}, {"rate": 0.06, "upto": 54081}, {"rate": 0.08, "upto": 68350}, {"rate": 0.093, "upto": 349137}, {"rate": 0.103, "upto": 418961}, {"rate": 0.113, "upto": 698271}, {"rate": 0.123, "upto": Infinity}]}},
+                    "CO": {"name": "Colorado", "single": {"brackets": [{"rate": 0.044, "upto": Infinity}]}},
+                    "CT": {"name": "Connecticut", "single": {"brackets": [{"rate": 0.03, "upto": 10000}, {"rate": 0.05, "upto": 50000}, {"rate": 0.055, "upto": 100000}, {"rate": 0.06, "upto": 200000}, {"rate": 0.065, "upto": 250000}, {"rate": 0.069, "upto": 500000}, {"rate": 0.0699, "upto": Infinity}]}},
+                    "DE": {"name": "Delaware", "single": {"brackets": [{"rate": 0.022, "upto": 5000}, {"rate": 0.039, "upto": 10000}, {"rate": 0.048, "upto": 20000}, {"rate": 0.052, "upto": 25000}, {"rate": 0.0555, "upto": 60000}, {"rate": 0.066, "upto": Infinity}]}},
+                    "FL": {"name": "Florida", "single": {"brackets": []}},
+                    "GA": {"name": "Georgia", "single": {"brackets": [{"rate": 0.0549, "upto": Infinity}]}},
+                    "HI": {"name": "Hawaii", "single": {"brackets": [{"rate": 0.014, "upto": 2400}, {"rate": 0.032, "upto": 4800}, {"rate": 0.055, "upto": 9600}, {"rate": 0.064, "upto": 14400}, {"rate": 0.068, "upto": 19200}, {"rate": 0.072, "upto": 24000}, {"rate": 0.076, "upto": 36000}, {"rate": 0.079, "upto": 48000}, {"rate": 0.0825, "upto": 150000}, {"rate": 0.09, "upto": 175000}, {"rate": 0.1, "upto": 200000}, {"rate": 0.11, "upto": Infinity}]}},
+                    "ID": {"name": "Idaho", "single": {"brackets": [{"rate": 0.058, "upto": Infinity}]}},
+                    "IL": {"name": "Illinois", "single": {"brackets": [{"rate": 0.0495, "upto": Infinity}]}},
+                    "IN": {"name": "Indiana", "single": {"brackets": [{"rate": 0.0315, "upto": Infinity}]}},
+                    "IA": {"name": "Iowa", "single": {"brackets": [{"rate": 0.057, "upto": Infinity}]}},
+                    "KS": {"name": "Kansas", "single": {"brackets": [{"rate": 0.031, "upto": 15000}, {"rate": 0.0525, "upto": 30000}, {"rate": 0.057, "upto": Infinity}]}},
+                    "KY": {"name": "Kentucky", "single": {"brackets": [{"rate": 0.045, "upto": Infinity}]}},
+                    "LA": {"name": "Louisiana", "single": {"brackets": [{"rate": 0.0185, "upto": 12500}, {"rate": 0.037, "upto": 50000}, {"rate": 0.0425, "upto": Infinity}]}},
+                    "ME": {"name": "Maine", "single": {"brackets": [{"rate": 0.058, "upto": 24500}, {"rate": 0.0675, "upto": 58050}, {"rate": 0.0715, "upto": Infinity}]}},
+                    "MD": {"name": "Maryland", "single": {"brackets": [{"rate": 0.02, "upto": 1000}, {"rate": 0.03, "upto": 2000}, {"rate": 0.04, "upto": 3000}, {"rate": 0.0475, "upto": 100000}, {"rate": 0.05, "upto": 125000}, {"rate": 0.0525, "upto": 150000}, {"rate": 0.055, "upto": 250000}, {"rate": 0.0575, "upto": Infinity}]}},
+                    "MA": {"name": "Massachusetts", "single": {"brackets": [{"rate": 0.05, "upto": Infinity}]}},
+                    "MI": {"name": "Michigan", "single": {"brackets": [{"rate": 0.0425, "upto": Infinity}]}},
+                    "MN": {"name": "Minnesota", "single": {"brackets": [{"rate": 0.0535, "upto": 30070}, {"rate": 0.068, "upto": 98750}, {"rate": 0.0785, "upto": 183340}, {"rate": 0.0985, "upto": Infinity}]}},
+                    "MS": {"name": "Mississippi", "single": {"brackets": [{"rate": 0.04, "upto": 5000}, {"rate": 0.05, "upto": Infinity}]}},
+                    "MO": {"name": "Missouri", "single": {"brackets": [{"rate": 0.0495, "upto": Infinity}]}},
+                    "MT": {"name": "Montana", "single": {"brackets": [{"rate": 0.047, "upto": 20500}, {"rate": 0.059, "upto": Infinity}]}},
+                    "NE": {"name": "Nebraska", "single": {"brackets": [{"rate": 0.0246, "upto": 3220}, {"rate": 0.0351, "upto": 19340}, {"rate": 0.0501, "upto": 32230}, {"rate": 0.0664, "upto": Infinity}]}},
+                    "NV": {"name": "Nevada", "single": {"brackets": []}},
+                    "NH": {"name": "New Hampshire", "single": {"brackets": []}},
+                    "NJ": {"name": "New Jersey", "single": {"brackets": [{"rate": 0.014, "upto": 20000}, {"rate": 0.0175, "upto": 35000}, {"rate": 0.035, "upto": 40000}, {"rate": 0.05525, "upto": 75000}, {"rate": 0.0637, "upto": 500000}, {"rate": 0.0897, "upto": 1000000}, {"rate": 0.1075, "upto": Infinity}]}},
+                    "NM": {"name": "New Mexico", "single": {"brackets": [{"rate": 0.017, "upto": 5500}, {"rate": 0.032, "upto": 11000}, {"rate": 0.049, "upto": 16000}, {"rate": 0.059, "upto": Infinity}]}},
+                    "NY": {"name": "New York", "single": {"brackets": [{"rate": 0.04, "upto": 8500}, {"rate": 0.045, "upto": 11700}, {"rate": 0.0525, "upto": 13900}, {"rate": 0.055, "upto": 80650}, {"rate": 0.06, "upto": 215400}, {"rate": 0.0685, "upto": 1077550}, {"rate": 0.0965, "upto": 5000000}, {"rate": 0.103, "upto": 25000000}, {"rate": 0.109, "upto": Infinity}]}},
+                    "NC": {"name": "North Carolina", "single": {"brackets": [{"rate": 0.0475, "upto": Infinity}]}},
+                    "ND": {"name": "North Dakota", "single": {"brackets": [{"rate": 0.011, "upto": 44725}, {"rate": 0.0204, "upto": 90425}, {"rate": 0.0227, "upto": 222525}, {"rate": 0.0264, "upto": 473975}, {"rate": 0.029, "upto": Infinity}]}},
+                    "OH": {"name": "Ohio", "single": {"brackets": [{"rate": 0.02765, "upto": 26050}, {"rate": 0.03226, "upto": 100000}, {"rate": 0.03688, "upto": Infinity}]}},
+                    "OK": {"name": "Oklahoma", "single": {"brackets": [{"rate": 0.005, "upto": 1000}, {"rate": 0.01, "upto": 2500}, {"rate": 0.02, "upto": 3750}, {"rate": 0.03, "upto": 4900}, {"rate": 0.04, "upto": 7200}, {"rate": 0.0475, "upto": Infinity}]}},
+                    "OR": {"name": "Oregon", "single": {"brackets": [{"rate": 0.0475, "upto": 3750}, {"rate": 0.0675, "upto": 9450}, {"rate": 0.0875, "upto": 125000}, {"rate": 0.099, "upto": Infinity}]}},
+                    "PA": {"name": "Pennsylvania", "single": {"brackets": [{"rate": 0.0307, "upto": Infinity}]}},
+                    "RI": {"name": "Rhode Island", "single": {"brackets": [{"rate": 0.0375, "upto": 68250}, {"rate": 0.0475, "upto": 155050}, {"rate": 0.0599, "upto": Infinity}]}},
+                    "SC": {"name": "South Carolina", "single": {"brackets": [{"rate": 0.03, "upto": 3210}, {"rate": 0.065, "upto": Infinity}]}},
+                    "SD": {"name": "South Dakota", "single": {"brackets": []}},
+                    "TN": {"name": "Tennessee", "single": {"brackets": []}},
+                    "TX": {"name": "Texas", "single": {"brackets": []}},
+                    "UT": {"name": "Utah", "single": {"brackets": [{"rate": 0.0465, "upto": Infinity}]}},
+                    "VT": {"name": "Vermont", "single": {"brackets": [{"rate": 0.0335, "upto": 45300}, {"rate": 0.066, "upto": 109800}, {"rate": 0.076, "upto": 229300}, {"rate": 0.0875, "upto": Infinity}]}},
+                    "VA": {"name": "Virginia", "single": {"brackets": [{"rate": 0.02, "upto": 3000}, {"rate": 0.03, "upto": 5000}, {"rate": 0.05, "upto": 17000}, {"rate": 0.0575, "upto": Infinity}]}},
+                    "WA": {"name": "Washington", "single": {"brackets": []}},
+                    "WV": {"name": "West Virginia", "single": {"brackets": [{"rate": 0.0236, "upto": 10000}, {"rate": 0.0315, "upto": 25000}, {"rate": 0.0354, "upto": 40000}, {"rate": 0.0472, "upto": 60000}, {"rate": 0.0512, "upto": Infinity}]}},
+                    "WI": {"name": "Wisconsin", "single": {"brackets": [{"rate": 0.0354, "upto": 13600}, {"rate": 0.0465, "upto": 27210}, {"rate": 0.053, "upto": 300090}, {"rate": 0.0765, "upto": Infinity}]}},
+                    "WY": {"name": "Wyoming", "single": {"brackets": []}}
+                }
+            }
+        };
+
+        // Add 2025 tax data
+        taxTablesData["2025"] = {
+            "federal": {
+                "single": {
+                    "brackets": [
+                        {"rate": 0.10, "upto": 12000},
+                        {"rate": 0.12, "upto": 48500},
+                        {"rate": 0.22, "upto": 103500},
+                        {"rate": 0.24, "upto": 197500},
+                        {"rate": 0.32, "upto": 250000},
+                        {"rate": 0.35, "upto": 625000},
+                        {"rate": 0.37, "upto": Infinity}
+                    ],
+                    "deduction": 15000
+                },
+                "married": {
+                    "brackets": [
+                        {"rate": 0.10, "upto": 24000},
+                        {"rate": 0.12, "upto": 97000},
+                        {"rate": 0.22, "upto": 207000},
+                        {"rate": 0.24, "upto": 395000},
+                        {"rate": 0.32, "upto": 500000},
+                        {"rate": 0.35, "upto": 750000},
+                        {"rate": 0.37, "upto": Infinity}
+                    ],
+                    "deduction": 30000
+                },
+                "hoh": {
+                    "brackets": [
+                        {"rate": 0.10, "upto": 17000},
+                        {"rate": 0.12, "upto": 65000},
+                        {"rate": 0.22, "upto": 103500},
+                        {"rate": 0.24, "upto": 197500},
+                        {"rate": 0.32, "upto": 250000},
+                        {"rate": 0.35, "upto": 625000},
+                        {"rate": 0.37, "upto": Infinity}
+                    ],
+                    "deduction": 22500
+                }
+            },
+            "fica": {
+                "social_security_rate": 0.062,
+                "social_security_limit": 176100,
+                "medicare_rate": 0.0145,
+                "additional_medicare_thresholds": {
+                    "single": 200000,
+                    "hoh": 200000,
+                    "married": 250000,
+                    "mfs": 125000
+                }
+            },
+            "states": {
+                ...taxTablesData["2024"].states,
+                "NJ": {
+                    "name": "New Jersey",
+                    "single": {"brackets": [{"rate": 0.014, "upto": 20000}, {"rate": 0.0175, "upto": 35000}, {"rate": 0.035, "upto": 40000}, {"rate": 0.05525, "upto": 75000}, {"rate": 0.0637, "upto": 500000}, {"rate": 0.0897, "upto": 1000000}, {"rate": 0.1075, "upto": Infinity}]},
+                    "married": {"brackets": [{"rate": 0.014, "upto": 20000}, {"rate": 0.0175, "upto": 35000}, {"rate": 0.035, "upto": 40000}, {"rate": 0.05525, "upto": 75000}, {"rate": 0.0637, "upto": 500000}, {"rate": 0.0897, "upto": 1000000}, {"rate": 0.1075, "upto": Infinity}]},
+                    "mfs": {"brackets": [{"rate": 0.014, "upto": 10000}, {"rate": 0.0175, "upto": 17500}, {"rate": 0.035, "upto": 20000}, {"rate": 0.05525, "upto": 37500}, {"rate": 0.0637, "upto": 250000}, {"rate": 0.0897, "upto": 500000}, {"rate": 0.1075, "upto": Infinity}]},
+                    "hoh": {"brackets": [{"rate": 0.014, "upto": 20000}, {"rate": 0.0175, "upto": 35000}, {"rate": 0.035, "upto": 40000}, {"rate": 0.05525, "upto": 75000}, {"rate": 0.0637, "upto": 500000}, {"rate": 0.0897, "upto": 1000000}, {"rate": 0.1075, "upto": Infinity}]},
+                    "qw": {"brackets": [{"rate": 0.014, "upto": 20000}, {"rate": 0.0175, "upto": 35000}, {"rate": 0.035, "upto": 40000}, {"rate": 0.05525, "upto": 75000}, {"rate": 0.0637, "upto": 500000}, {"rate": 0.0897, "upto": 1000000}, {"rate": 0.1075, "upto": Infinity}]},
+                    "sui_rate": 0.0004,
+                    "fli_rate": 0.0033,
+                    "fli_wage_cap": 165400,
+                    "fli_max_contribution": 545.82
+                }
+            }
+        };
+
+        // Utility functions
+        const pMath = {
+            add: (...nums) => nums.reduce((a, b) => parseFloat(a) + parseFloat(b), 0),
+            subtract: (a, b) => parseFloat(a) - parseFloat(b),
+            multiply: (a, b) => parseFloat(a) * parseFloat(b),
+            divide: (a, b) => (parseFloat(b) === 0 ? 0 : parseFloat(a) / parseFloat(b)),
+            round: (num) => Math.round(num * 100) / 100
+        };
+
+        const formatDate = (dateString) => {
+            if (!dateString) return '';
+            const date = new Date(dateString + 'T00:00:00');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${month}/${day}/${year}`;
+        };
+
+        const formatCurrency = (amount) => `${(amount || 0).toFixed(2)}`;
+
+        const validateNumber = (value, fieldName) => {
+            if (isNaN(value) || value < 0) {
+                return 0;
+            }
+            return parseFloat(value);
+        };
+
+        // Data Service
+        class DataService {
+            getTaxTables(year) { 
+                return Promise.resolve(taxTablesData[year] || null); 
+            }
+            
+            getAllStateNames() {
+                const yearData = taxTablesData['2024']; 
+                if (!yearData || !yearData.states) return {};
+                const states = {};
+                for (const abbr in yearData.states) {
+                    states[abbr] = yearData.states[abbr].name;
+                }
+                return states;
+            }
+        }
+
+        // Paystub Calculator
+        class PaystubCalculator {
+            constructor() {
+                this.dataService = new DataService();
+            }
+
+            async calculateAll(baseFormData) {
+                const results = [];
+                const taxTables = await this.dataService.getTaxTables(baseFormData.taxYear);
+                if (!taxTables) {
+                    console.error(`Tax information for year ${baseFormData.taxYear} not found.`);
+                    return [];
+                }
+
+                let ytdGrossTracker = baseFormData.initialYtd.grossPay;
+                let ytdEarningsTracker = {};
+                let ytdDeductionsTracker = {};
+                let ytdTaxesTracker = {
+                    'Federal Income Tax': 0,
+                    'Social Security': 0,
+                    'Medicare': 0,
+                    'Additional Medicare Tax': 0,
+                    'State Income Tax': 0,
+                    'State Unemployment Insurance': 0,
+                    'Family Leave Insurance': 0
+                };
+
+                Object.keys(baseFormData.initialYtd.earnings || {}).forEach(key => {
+                    ytdEarningsTracker[key] = baseFormData.initialYtd.earnings[key] || 0;
+                });
+                Object.keys(baseFormData.initialYtd.deductions || {}).forEach(key => {
+                    ytdDeductionsTracker[key] = baseFormData.initialYtd.deductions[key] || 0;
+                });
+
+                for (let i = 0; i < baseFormData.numPaystubs; i++) {
+                    const singleStubData = { ...baseFormData, ...baseFormData.stubs[i] };
+                    
+                    const result = this.calculateSingle(
+                        singleStubData, 
+                        taxTables, 
+                        ytdGrossTracker,
+                        { ...ytdEarningsTracker },
+                        { ...ytdDeductionsTracker },
+                        { ...ytdTaxesTracker }
+                    );
+
+                    ytdGrossTracker = pMath.add(ytdGrossTracker, result.grossPay);
+                    result.earnings.forEach(e => {
+                        ytdEarningsTracker[e.description] = pMath.add(
+                            ytdEarningsTracker[e.description] || 0, 
+                            e.current
+                        );
+                    });
+                    result.deductions.forEach(d => {
+                        ytdDeductionsTracker[d.description] = pMath.add(
+                            ytdDeductionsTracker[d.description] || 0, 
+                            d.current
+                        );
+                    });
+                    result.taxes.forEach(t => {
+                        ytdTaxesTracker[t.name] = pMath.add(
+                            ytdTaxesTracker[t.name] || 0, 
+                            t.current
+                        );
+                    });
+
+                    results.push({ ...result, currentStubIndex: i + 1, ytdGross: ytdGrossTracker });
+                }
+
+                return results;
+            }
+
+            calculateSingle(formData, taxTables, ytdGrossBeforeCurrent, ytdEarnings, ytdDeductions, ytdTaxes) {
+                const payPeriodsPerYear = { weekly: 52, 'bi-weekly': 26, 'semi-monthly': 24, monthly: 12 };
+                const numPayPeriods = payPeriodsPerYear[formData.payPeriod] || 26;
+
+                const currentGrossPay = formData.earnings.reduce((total, item) => pMath.add(total, parseFloat(item.current) || 0), 0);
+                const annualGross = pMath.multiply(currentGrossPay, numPayPeriods);
+
+                const calculatedTaxes = this.calculateTaxes(currentGrossPay, annualGross, formData, taxTables, numPayPeriods, ytdGrossBeforeCurrent, ytdTaxes);
+
+                const currentTotalDeductions = formData.deductions.reduce((total, item) => pMath.add(total, parseFloat(item.current) || 0), 0);
+                const currentTotalTaxes = Object.values(calculatedTaxes).reduce((sum, tax) => pMath.add(sum, tax), 0);
+
+                const netPay = pMath.subtract(pMath.subtract(currentGrossPay, currentTotalTaxes), currentTotalDeductions);
+
+                return {
+                    ...formData,
+                    grossPay: pMath.round(currentGrossPay),
+                    netPay: pMath.round(netPay),
+                    totalDeductions: pMath.round(currentTotalDeductions),
+                    totalTaxes: pMath.round(currentTotalTaxes),
+                    earnings: formData.earnings.map(e => ({
+                        ...e, 
+                        current: pMath.round(parseFloat(e.current) || 0),
+                        ytd: pMath.round(pMath.add(ytdEarnings[e.description] || 0, parseFloat(e.current) || 0))
+                    })),
+                    deductions: formData.deductions.map(d => ({
+                        ...d, 
+                        current: pMath.round(parseFloat(d.current) || 0),
+                        ytd: pMath.round(pMath.add(ytdDeductions[d.description] || 0, parseFloat(d.current) || 0))
+                    })),
+                    taxes: [
+                        { name: 'Federal Income Tax', current: pMath.round(calculatedTaxes.federal), ytd: pMath.round(pMath.add(ytdTaxes['Federal Income Tax'] || 0, calculatedTaxes.federal)) },
+                        { name: 'Social Security', current: pMath.round(calculatedTaxes.socialSecurity), ytd: pMath.round(pMath.add(ytdTaxes['Social Security'] || 0, calculatedTaxes.socialSecurity)) },
+                        { name: 'Medicare', current: pMath.round(calculatedTaxes.medicare), ytd: pMath.round(pMath.add(ytdTaxes['Medicare'] || 0, calculatedTaxes.medicare)) },
+                        { name: 'Additional Medicare Tax', current: pMath.round(calculatedTaxes.additionalMedicare), ytd: pMath.round(pMath.add(ytdTaxes['Additional Medicare Tax'] || 0, calculatedTaxes.additionalMedicare)) },
+                        { name: 'State Income Tax', current: pMath.round(calculatedTaxes.state), ytd: pMath.round(pMath.add(ytdTaxes['State Income Tax'] || 0, calculatedTaxes.state)) },
+                        { name: 'State Unemployment Insurance', current: pMath.round(calculatedTaxes.sui), ytd: pMath.round(pMath.add(ytdTaxes['State Unemployment Insurance'] || 0, calculatedTaxes.sui)) },
+                        { name: 'Family Leave Insurance', current: pMath.round(calculatedTaxes.fli), ytd: pMath.round(pMath.add(ytdTaxes['Family Leave Insurance'] || 0, calculatedTaxes.fli)) },
+                    ].filter(t => t.current > 0 || t.ytd > 0),
+                };
+            }
+
+            calculateTaxes(currentGross, annualGross, formData, taxTables, numPayPeriods, ytdGrossBeforeCurrent, ytdTaxesAccumulator) {
+                const federal = this.getFederalTax(annualGross, formData.filingStatus, taxTables.federal, numPayPeriods, formData.additionalFederalWithholding);
+                const socialSecurity = this.getSocialSecurityTax(currentGross, ytdGrossBeforeCurrent, taxTables.fica);
+                const medicare = this.getMedicareTax(currentGross, taxTables.fica);
+                const additionalMedicare = this.getAdditionalMedicareTax(currentGross, ytdGrossBeforeCurrent + currentGross, formData.filingStatus, taxTables.fica, ytdTaxesAccumulator['Additional Medicare Tax']);
+
+                let stateTax = 0;
+                let suiTax = 0;
+                let fliTax = 0;
+
+                if (formData.state === 'NJ' && taxTables.states['NJ']) {
+                    const njTaxInfo = taxTables.states['NJ'];
+                    stateTax = this.getStateTax(annualGross, 'NJ', formData.njFilingStatus, taxTables.states, numPayPeriods);
+                    suiTax = this.getNJUnemploymentInsurance(currentGross, njTaxInfo);
+                    fliTax = this.getNJFamilyLeaveInsurance(currentGross, ytdGrossBeforeCurrent, njTaxInfo, ytdTaxesAccumulator['Family Leave Insurance']);
+                } else {
+                    stateTax = this.getStateTax(annualGross, formData.state, formData.filingStatus, taxTables.states, numPayPeriods);
+                }
+
+                return {
+                    federal,
+                    socialSecurity,
+                    medicare,
+                    additionalMedicare,
+                    state: stateTax,
+                    sui: suiTax,
+                    fli: fliTax
+                };
+            }
+
+            calculateBracketTax(annualIncome, taxInfo) {
+                let tax = 0;
+                let prevBracketUpto = 0;
+                const taxableIncome = Math.max(0, annualIncome);
+
+                if (!taxInfo.brackets || taxInfo.brackets.length === 0) {
+                    return 0;
+                }
+
+                for (const bracket of taxInfo.brackets) {
+                    if (typeof bracket.rate !== 'number' || isNaN(bracket.rate)) continue;
+                    if (taxableIncome > prevBracketUpto) {
+                        const bracketLimit = bracket.upto || Infinity;
+                        const taxableInCurrentBracket = Math.min(taxableIncome, bracketLimit) - prevBracketUpto;
+                        if (taxableInCurrentBracket > 0) {
+                            tax += pMath.multiply(taxableInCurrentBracket, bracket.rate);
+                        }
+                    }
+                    if (taxableIncome <= (bracket.upto || Infinity)) {
+                        break;
+                    }
+                    prevBracketUpto = bracket.upto || Infinity;
+                }
+                return tax;
+            }
+
+            getFederalTax(annualGross, filingStatus, federalTables, numPayPeriods, additionalWithholding) {
+                const table = federalTables[filingStatus];
+                if (!table) return 0;
+                const taxableIncome = Math.max(0, pMath.subtract(annualGross, table.deduction)); 
+                const annualTax = this.calculateBracketTax(taxableIncome, table);
+                return pMath.round(pMath.divide(annualTax, numPayPeriods) + (parseFloat(additionalWithholding) || 0));
+            }
+
+            getStateTax(annualGross, stateAbbr, filingStatus, stateTables, numPayPeriods) {
+                const stateInfo = stateTables[stateAbbr];
+                if (!stateInfo) return 0;
+                const table = stateInfo[filingStatus] || stateInfo.single;
+                if (!table || !table.brackets || table.brackets.length === 0) return 0; 
+                const annualTax = this.calculateBracketTax(annualGross, table);
+                return pMath.round(pMath.divide(annualTax, numPayPeriods));
+            }
+
+            getSocialSecurityTax(currentGross, ytdGrossBeforeCurrent, ficaTable) {
+                const limit = ficaTable.social_security_limit;
+                const socialSecurityRate = ficaTable.social_security_rate;
+                const ytdTaxableSS = Math.min(ytdGrossBeforeCurrent, limit);
+                const remainingLimit = Math.max(0, limit - ytdTaxableSS);
+                const taxableThisPeriod = Math.min(currentGross, remainingLimit);
+                if (taxableThisPeriod <= 0) return 0;
+                return pMath.round(pMath.multiply(taxableThisPeriod, socialSecurityRate));
+            }
+
+            getMedicareTax(currentGross, ficaTable) {
+                return pMath.round(pMath.multiply(currentGross, ficaTable.medicare_rate));
+            }
+
+            getAdditionalMedicareTax(currentGross, ytdGrossCurrentPeriodEnd, filingStatus, ficaTable, ytdAdditionalMedicareBeforeCurrent) {
+                const threshold = ficaTable.additional_medicare_thresholds?.[filingStatus];
+                if (threshold === undefined) return 0;
+                let tax = 0;
+                const amountOverThresholdThisPeriod = Math.max(0, ytdGrossCurrentPeriodEnd - Math.max(threshold, ytdGrossBeforeCurrent));
+                if (amountOverThresholdThisPeriod > 0) {
+                    tax = pMath.multiply(amountOverThresholdThisPeriod, 0.009);
+                }
+                return pMath.round(tax);
+            }
+
+            getNJUnemploymentInsurance(currentGross, njTaxInfo) {
+                const suiRate = njTaxInfo.sui_rate || 0;
+                return pMath.round(pMath.multiply(currentGross, suiRate));
+            }
+
+            getNJFamilyLeaveInsurance(currentGross, ytdGrossBeforeCurrent, njTaxInfo, ytdFliTaxBeforeCurrent) {
+                const fliRate = njTaxInfo.fli_rate || 0;
+                const fliWageCap = njTaxInfo.fli_wage_cap || Infinity;
+                const fliMaxContribution = njTaxInfo.fli_max_contribution || Infinity;
+
+                const ytdTaxableFliWage = Math.min(ytdGrossBeforeCurrent, fliWageCap);
+                const remainingWageLimit = Math.max(0, fliWageCap - ytdTaxableFliWage);
+                const taxableThisPeriodWageCap = Math.min(currentGross, remainingWageLimit);
+
+                let calculatedTax = pMath.multiply(taxableThisPeriodWageCap, fliRate);
+                const remainingContributionLimit = Math.max(0, fliMaxContribution - ytdFliTaxBeforeCurrent);
+                const finalTax = Math.min(calculatedTax, remainingContributionLimit);
+
+                if (finalTax <= 0) return 0;
+                return pMath.round(finalTax);
+            }
+        }
+
+        // Preview Updater
+        class PreviewUpdater {
+            constructor() {
+                this.container = document.getElementById('previews-container');
+                this.template = document.getElementById('paystub-template');
+                this.stubNavStatus = document.getElementById('stub-nav-status');
+                this.prevStubBtn = document.getElementById('prev-stub');
+                this.nextStubBtn = document.getElementById('next-stub');
+                this.currentIndex = 0;
+                this.totalStubs = 0;
+                this.allPaystubData = [];
+            }
+
+            updateAll(results) {
+                this.container.innerHTML = ''; 
+                this.totalStubs = results.length;
+                this.allPaystubData = results; 
+                this.currentIndex = 0; 
+
+                results.forEach((data, index) => {
+                    const newStub = this.template.cloneNode(true);
+                    newStub.id = `paystub-preview-${index}`;
+                    newStub.classList.add('paystub-wrapper');
+                    if (index === 0) {
+                        newStub.classList.add('active');
+                    } else {
+                        newStub.style.display = 'none';
+                    }
+                    this.container.appendChild(newStub);
+                    this.populateStub(newStub, data);
+                });
+
+                this.updateNav();
+            }
+
+            populateStub(stubElement, data) {
+                const find = (selector) => stubElement.querySelector(`[data-id="${selector}"]`);
+
+                find('businessName').textContent = data.businessName;
+                find('businessAddress').textContent = data.businessAddress;
+                find('businessEin').textContent = `EIN: ${data.businessEin}`;
+                find('employeeName').textContent = data.employeeName;
+                find('employeeAddress').textContent = data.employeeAddress;
+                find('employeeId').textContent = data.employeeId;
+                find('employeeSsn').textContent = data.employeeSsn;
+                find('payDate').textContent = formatDate(data.payDate);
+                find('payPeriodRange').textContent = `${formatDate(data.payPeriodStart)} - ${formatDate(data.payPeriodEnd)}`;
+
+                const checkNumberSpan = find('checkNumber');
+                if(checkNumberSpan) checkNumberSpan.textContent = data.checkNumber;
+                const routingNumberSpan = find('routingNumber');
+                if(routingNumberSpan) routingNumberSpan.textContent = data.routingNumber;
+                const accountNumberSpan = find('accountNumber');
+                if(accountNumberSpan) accountNumberSpan.textContent = data.accountNumber;
+
+                this.updateEarningsTable(find('earnings-table'), data.earnings);
+                this.updateGenericTable(find('deductions-table'), data.deductions);
+                this.updateGenericTable(find('taxes-table'), data.taxes);
+
+                stubElement.querySelector('table[data-id="earnings-table"] tfoot [data-id="grossPay"]').textContent = formatCurrency(data.grossPay);
+                stubElement.querySelector('table[data-id="deductions-table"] tfoot [data-id="totalDeductions"]').textContent = formatCurrency(data.totalDeductions);
+                stubElement.querySelector('table[data-id="taxes-table"] tfoot [data-id="totalTaxes"]').textContent = formatCurrency(data.totalTaxes);
+
+                find('summaryGrossPay').textContent = formatCurrency(data.grossPay);
+                find('summaryTotalDeductions').textContent = formatCurrency(data.totalDeductions);
+                find('summaryTotalTaxes').textContent = formatCurrency(data.totalTaxes);
+                find('summaryNetPay').textContent = formatCurrency(data.netPay);
+            }
+
+            updateEarningsTable(table, items) {
+                const tbody = table.querySelector('tbody');
+                tbody.innerHTML = ''; 
+                if (!items || items.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">No earnings entered.</td></tr>`;
+                    return;
+                }
+                items.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.description}</td>
+                            <td class="text-right">${formatCurrency(item.rate)}</td>
+                            <td class="text-right">${item.hours.toFixed(2)}</td>
+                            <td class="text-right">${formatCurrency(item.current)}</td>
+                            <td class="text-right">${formatCurrency(item.ytd)}</td>
+                        </tr>`;
+                });
+            }
+
+            updateGenericTable(table, items) {
+                const tbody = table.querySelector('tbody');
+                tbody.innerHTML = ''; 
+                if (!items || items.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #888;">None</td></tr>`;
+                    return;
+                }
+                items.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.name || item.description}</td>
+                            <td class="text-right">${formatCurrency(item.current)}</td>
+                            <td class="text-right">${formatCurrency(item.ytd)}</td>
+                        </tr>`;
+                });
+            }
+
+            next() { 
+                if (this.currentIndex < this.totalStubs - 1) {
+                    this.showStub(this.currentIndex + 1);
+                }
+            }
+
+            prev() { 
+                if (this.currentIndex > 0) {
+                    this.showStub(this.currentIndex - 1);
+                }
+            }
+
+            showStub(index) {
+                if (index < 0 || index >= this.totalStubs) return;
+                this.currentIndex = index;
+                this.container.querySelectorAll('.paystub-wrapper').forEach(stub => {
+                    stub.classList.remove('active');
+                    stub.style.display = 'none';
+                });
+                const stubToShow = this.container.querySelector(`#paystub-preview-${index}`);
+                if (stubToShow) {
+                    stubToShow.classList.add('active');
+                    stubToShow.style.display = 'block';
+                    void stubToShow.offsetWidth;
+                }
+                this.updateNav();
+            }
+
+            updateNav() {
+                this.stubNavStatus.textContent = `Stub ${this.currentIndex + 1} of ${this.totalStubs}`;
+                this.prevStubBtn.disabled = this.currentIndex === 0;
+                this.nextStubBtn.disabled = this.currentIndex >= this.totalStubs - 1;
+            }
+
+            getCurrentStubElementForPDF() {
+                const activeStub = this.container.querySelector('.paystub-wrapper.active');
+                if (!activeStub) return null;
+
+                const pdfElement = activeStub.cloneNode(true);
+                pdfElement.style.display = 'block';
+                pdfElement.style.width = '100%';
+                pdfElement.style.maxWidth = '800px';
+                pdfElement.style.margin = '0 auto';
+
+                const style = document.createElement('style');
+                style.textContent = `
+                    * { font-family: 'Inter', sans-serif !important; }
+                    .paystub-wrapper { 
+                        width: 100% !important; 
+                        max-width: 800px !important;
+                        box-sizing: border-box !important;
+                        padding: 20px !important;
+                    }
+                    .paystub-content {
+                        padding: 20px !important;
+                        font-size: 14px !important;
+                        border: 1px solid #e0e0e0 !important;
+                        border-radius: 8px !important;
+                        background-color: #ffffff !important;
+                        color: #333 !important;
+                    }
+                    .paystub-table { 
+                        width: 100% !important; 
+                        border-collapse: collapse !important; 
+                        margin-top: 10px !important; 
+                        font-size: 12px !important;
+                    }
+                    .paystub-table th, .paystub-table td { 
+                        padding: 8px 10px !important;
+                        text-align: left !important; 
+                        border-bottom: 1px dashed #e9e9e9 !important; 
+                    }
+                    .paystub-table thead th { 
+                        background-color: #f5f7f9 !important; 
+                        font-weight: 700 !important; 
+                    }
+                    .summary-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(4, 1fr) !important;
+                        gap: 10px !important;
+                    }
+                    .summary-item strong { font-size: 12px !important; }
+                    .summary-item span { font-size: 16px !important; }
+                `;
+                pdfElement.appendChild(style);
+                return pdfElement;
+            }
+        }
+
+        // Form Manager
+        class FormManager {
+            constructor(updateCallback) {
+                this.form = document.getElementById('paystub-form');
+                this.updateCallback = updateCallback;
+                this.dataService = new DataService();
+
+                this.taxYearDisclaimer = document.getElementById('tax-year-disclaimer');
+                this.njFilingStatusGroup = document.getElementById('nj-filing-status-group');
+                this.incomeTypeSelect = document.getElementById('incomeType');
+                this.incomeAmountInput = document.getElementById('incomeAmount');
+                this.incomeAmountGroup = document.getElementById('income-amount-group');
+                this.payPeriodSelect = document.getElementById('payPeriod');
+                this.numPaystubsInput = document.getElementById('numPaystubs');
+                this.paystubDatesContainer = document.getElementById('paystub-dates-container');
+                this.payRateInput = document.getElementById('payRate');
+                this.taxYearSelect = document.getElementById('taxYear');
+                this.stateSelect = document.getElementById('state');
+                this.earningsContainer = document.getElementById('earnings-container');
+                this.deductionsContainer = document.getElementById('deductions-container');
+
+                this.form.addEventListener('input', (e) => {
+                    if (e.target.id === 'incomeType' || e.target.id === 'incomeAmount' || e.target.id === 'payPeriod') {
+                        this.handleIncomeCalculation();
+                    }
+                    if (e.target.id === 'payPeriod' || e.target.id === 'numPaystubs') {
+                        this.generateDateInputs();
+                    }
+                    if (e.target.id === 'taxYear') {
+                        this.toggleTaxYearDisclaimer();
+                    }
+                    if (e.target.id === 'state') {
+                        this.toggleNjFilingStatus();
+                    }
+                    this.updateCallback();
+                });
+
+                this.setupDynamicFields();
+                this.populateStateOptions();
+                this.setupBatchGeneration();
+                this.addDefaultEarningDeduction(); 
+                this.handleIncomeCalculation();
+                this.toggleTaxYearDisclaimer();
+                this.toggleNjFilingStatus(); 
+            }
+
+            getFormData() {
+                const getDynamicData = (containerId, hasRateAndHours) => {
+                    const items = [];
+                    const ytdMap = {}; 
+                    document.querySelectorAll(`#${containerId} .dynamic-field-grid`).forEach((field, index) => {
+                        if (index === 0) return; 
+                        const descInput = field.querySelector('[name*="Description"]');
+                        if (!descInput || !descInput.value.trim()) return; 
+                        const description = descInput.value.trim();
+                        let currentAmount = 0;
+                        let ytdAmount = 0;
+                        if (hasRateAndHours) {
+                            currentAmount = validateNumber(field.querySelector('[name*="Rate"]').value, `${description} Rate`) * 
+                                            validateNumber(field.querySelector('[name*="Hours"]').value, `${description} Hours`);
+                            ytdAmount = validateNumber(field.querySelector('[name*="AmountYTD"]').value, `${description} YTD Amount`);
+                            const item = { description, current: currentAmount };
+                            item.rate = validateNumber(field.querySelector('[name*="Rate"]').value, `${description} Rate`);
+                            item.hours = validateNumber(field.querySelector('[name*="Hours"]').value, `${description} Hours`);
+                            items.push(item);
+                        } else {
+                            currentAmount = validateNumber(field.querySelector('[name*="AmountCurrent"]').value, `${description} Current Amount`);
+                            ytdAmount = validateNumber(field.querySelector('[name*="AmountYTD"]').value, `${description} YTD Amount`);
+                            items.push({ description, current: currentAmount });
+                        }
+                        ytdMap[description] = ytdAmount; 
+                    });
+                    return { items, ytd: ytdMap };
+                };
+
+                const earningsData = getDynamicData('earnings-container', true);
+                const deductionsData = getDynamicData('deductions-container', false);
+
+                const stubs = [];
+                const numPaystubs = parseInt(this.numPaystubsInput.value, 10) || 1;
+                const payPeriod = this.payPeriodSelect.value;
+
+                for(let i = 0; i < numPaystubs; i++){
+                    const payPeriodStartInput = document.getElementById(`payPeriodStart-${i}`);
+                    const payPeriodStart = payPeriodStartInput ? payPeriodStartInput.value : '';
+                    let payPeriodEnd = '';
+                    let payDate = '';
+                    if (payPeriodStart) {
+                        const calculatedDates = this.calculateEndAndPayDates(payPeriodStart, payPeriod);
+                        payPeriodEnd = calculatedDates.payPeriodEnd;
+                        payDate = calculatedDates.payDate;
+                    }
+                    stubs.push({ payPeriodStart, payPeriodEnd, payDate });
+                }
+
+                return {
+                    businessName: document.getElementById('businessName').value,
+                    businessAddress: document.getElementById('businessAddress').value,
+                    businessEin: document.getElementById('businessEin').value,
+                    checkNumber: document.getElementById('checkNumber').value,
+                    routingNumber: document.getElementById('routingNumber').value,
+                    accountNumber: document.getElementById('accountNumber').value,
+                    employeeName: document.getElementById('employeeName').value,
+                    employeeAddress: document.getElementById('employeeAddress').value,
+                    employeeId: document.getElementById('employeeId').value,
+                    employeeSsn: document.getElementById('employeeSsn').value,
+                    initialYtd: {
+                        grossPay: validateNumber(document.getElementById('initialYtdGross').value, 'Initial YTD Gross Pay'),
+                        earnings: earningsData.ytd,
+                        deductions: deductionsData.ytd,
+                        taxes: {}
+                    },
+                    payPeriod: this.payPeriodSelect.value,
+                    payRate: validateNumber(this.payRateInput.value, 'Pay Rate'),
+                    taxYear: this.taxYearSelect.value,
+                    filingStatus: document.getElementById('filingStatus').value,
+                    additionalFederalWithholding: validateNumber(document.getElementById('additionalFederalWithholding').value, 'Additional Federal Withholding'),
+                    state: this.stateSelect.value,
+                    njFilingStatus: this.njFilingStatusGroup.style.display !== 'none' && document.getElementById('njFilingStatus') ? document.getElementById('njFilingStatus').value : 'single',
+                    numPaystubs: numPaystubs,
+                    stubs: stubs,
+                    earnings: earningsData.items,
+                    deductions: deductionsData.items,
+                };
+            }
+
+            setupBatchGeneration() {
+                this.numPaystubsInput.addEventListener('input', () => this.generateDateInputs());
+            }
+
+            generateDateInputs() {
+                const container = this.paystubDatesContainer;
+                const num = parseInt(this.numPaystubsInput.value, 10) || 1;
+                const payPeriod = this.payPeriodSelect.value;
+                let daysOffset = 0;
+                const today = new Date();
+
+                switch (payPeriod) {
+                    case 'weekly': daysOffset = 7; break;
+                    case 'bi-weekly': daysOffset = 14; break;
+                    case 'semi-monthly': daysOffset = 15; break; 
+                    case 'monthly': daysOffset = 30; break;
+                    default: daysOffset = 14; 
+                }
+
+                container.innerHTML = ''; 
+                let startDateForFirstStub = new Date(today);
+                startDateForFirstStub.setDate(today.getDate() - (daysOffset * (num - 1)));
+
+                for (let i = 0; i < num; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.innerHTML = `<label for="payPeriodStart-${i}">Paystub ${i + 1} Start Date</label>
+                                     <input type="date" id="payPeriodStart-${i}" name="payPeriodStart-${i}">`;
+                    container.appendChild(div);
+
+                    const currentStubStartDate = new Date(startDateForFirstStub);
+                    currentStubStartDate.setDate(startDateForFirstStub.getDate() + (daysOffset * i));
+
+                    const dateInput = document.getElementById(`payPeriodStart-${i}`);
+                    dateInput.value = currentStubStartDate.toISOString().split('T')[0];
+                }
+            }
+
+            calculateEndAndPayDates(startDateString, payPeriod) {
+                const startDate = new Date(startDateString + 'T00:00:00');
+                const endDate = new Date(startDate);
+                let payDate = new Date(startDate);
+
+                switch(payPeriod) {
+                    case 'weekly':
+                        endDate.setDate(startDate.getDate() + 6);
+                        payDate.setDate(endDate.getDate() + 2);
+                        break;
+                    case 'bi-weekly':
+                        endDate.setDate(startDate.getDate() + 13);
+                        payDate.setDate(endDate.getDate() + 2);
+                        break;
+                    case 'semi-monthly':
+                        const day = startDate.getDate();
+                        if (day <= 15) {
+                            endDate.setDate(15);
+                            payDate = new Date(startDate.getFullYear(), startDate.getMonth(), 17);
+                        } else {
+                            endDate.setMonth(startDate.getMonth() + 1, 0); 
+                            payDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 2);
+                        }
+                        break;
+                    case 'monthly':
+                        endDate.setMonth(startDate.getMonth() + 1, 0); 
+                        payDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 5);
+                        break;
+                    default:
+                        endDate.setDate(startDate.getDate() + 13);
+                        payDate.setDate(endDate.getDate() + 2);
+                        break;
+                }
+
+                const formatDate = (date) => {
+                    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                };
+
+                return { 
+                    payPeriodEnd: formatDate(endDate),
+                    payDate: formatDate(payDate)
+                };
+            }
+
+            handleIncomeCalculation() {
+                const incomeType = this.incomeTypeSelect.value;
+                const incomeAmount = validateNumber(this.incomeAmountInput.value, 'Income Amount');
+                const payPeriod = this.payPeriodSelect.value;
+                const payPeriodsPerYear = { weekly: 52, 'bi-weekly': 26, 'semi-monthly': 24, monthly: 12 };
+
+                if (incomeType === 'manual' || incomeAmount <= 0) {
+                    this.incomeAmountGroup.style.display = 'none';
+                    const firstEarningRow = this.earningsContainer.querySelector('.dynamic-field-grid:not(:first-child)');
+                    if (firstEarningRow) {
+                        firstEarningRow.querySelector('[name*="Rate"]').value = '';
+                        firstEarningRow.querySelector('[name*="Hours"]').value = '';
+                    }
+                    return;
+                }
+
+                this.incomeAmountGroup.style.display = 'block';
+
+                let annualSalary = 0;
+                switch(incomeType) {
+                    case 'annual': annualSalary = incomeAmount; break;
+                    case 'monthly': annualSalary = incomeAmount * 12; break;
+                    case 'weekly': annualSalary = incomeAmount * 52; break;
+                    default: annualSalary = 0; break;
+                }
+
+                const grossPerPeriod = pMath.divide(annualSalary, payPeriodsPerYear[payPeriod] || 1); 
+                const hoursPerPeriod = { weekly: 40, 'bi-weekly': 80, 'semi-monthly': 86.67, monthly: 173.33 }; 
+                const hourlyRate = pMath.divide(grossPerPeriod, hoursPerPeriod[payPeriod] || 1); 
+
+                const firstEarningRow = this.earningsContainer.querySelector('.dynamic-field-grid:not(:first-child)'); 
+                if (firstEarningRow) {
+                    const descInput = firstEarningRow.querySelector('[name*="Description"]');
+                    const rateInput = firstEarningRow.querySelector('[name*="Rate"]');
+                    const hoursInput = firstEarningRow.querySelector('[name*="Hours"]');
+
+                    if (descInput && rateInput && hoursInput) {
+                        descInput.value = 'Regular Pay'; 
+                        rateInput.value = pMath.round(hourlyRate);
+                        hoursInput.value = hoursPerPeriod[payPeriod].toFixed(2);
+                    }
+                }
+
+                this.payRateInput.value = pMath.round(hourlyRate);
+            }
+
+            async populateStateOptions() {
+                const stateSelect = this.stateSelect;
+                const states = this.dataService.getAllStateNames();
+                stateSelect.innerHTML = '<option value="">Select State</option>'; 
+                for (const abbr in states) {
+                    stateSelect.add(new Option(states[abbr], abbr));
+                }
+                stateSelect.value = 'NJ';
+            }
+
+            setupDynamicFields() {
+                document.getElementById('add-earning').addEventListener('click', () => {
+                    this.addDynamicField('earnings-container', true);
+                    this.updateCallback();
+                });
+                document.getElementById('add-deduction').addEventListener('click', () => {
+                    this.addDynamicField('deductions-container', false);
+                    this.updateCallback();
+                });
+            }
+
+            addDefaultEarningDeduction() {
+                const initialUpdateCallback = this.updateCallback;
+                this.updateCallback = () => {}; 
+                this.addDynamicField('earnings-container', true, { desc: 'Regular Pay', rate: 31.25, hours: 80, current: (31.25 * 80), ytd: 0 });
+                this.addDynamicField('deductions-container', false, { desc: 'Health Insurance', current: 150, ytd: 3000 });
+                this.updateCallback = initialUpdateCallback; 
+            }
+
+            addDynamicField(containerId, hasRateAndHours, defaults = {}) {
+                const container = document.getElementById(containerId);
+                const newField = document.createElement('div');
+                newField.className = 'form-group dynamic-field-grid';
+
+                const desc = defaults.desc || '';
+                const current = defaults.current || ''; 
+                const ytd = defaults.ytd || '';
+                const rate = defaults.rate || '';
+                const hours = defaults.hours || '';
+                const baseName = containerId.includes('earn') ? 'earning' : 'deduction';
+
+                newField.innerHTML = `
+                    <input type="text" name="${baseName}Description" placeholder="Description" value="${desc}">
+                    ${hasRateAndHours ? `
+                        <input type="number" name="${baseName}Rate" placeholder="Rate" step="0.01" value="${rate}">
+                        <input type="number" name="${baseName}Hours" placeholder="Hours" step="0.01" value="${hours}">
+                        <input type="number" name="${baseName}AmountYTD" placeholder="YTD" step="0.01" value="${ytd}">
+                    ` : `
+                        <input type="number" name="${baseName}AmountCurrent" placeholder="Amount" step="0.01" value="${current}">
+                        <input type="number" name="${baseName}AmountYTD" placeholder="YTD" step="0.01" value="${ytd}">
+                        <span></span>
+                    `}
+                    <button type="button" class="btn-remove">&times;</button>
+                `;
+
+                if (hasRateAndHours) {
+                    const rateInput = newField.querySelector('input[name*="Rate"]');
+                    const hoursInput = newField.querySelector('input[name*="Hours"]');
+                    const calculateCurrent = () => {
+                         const currentAmount = pMath.multiply(parseFloat(rateInput.value) || 0, parseFloat(hoursInput.value) || 0);
+                         this.updateCallback();
+                    };
+                    rateInput.addEventListener('input', calculateCurrent);
+                    hoursInput.addEventListener('input', calculateCurrent);
+                }
+
+                container.appendChild(newField);
+
+                newField.querySelector('.btn-remove').addEventListener('click', (e) => {
+                    e.target.parentElement.remove();
+                    this.updateCallback();
+                });
+            }
+
+            toggleTaxYearDisclaimer() {
+                const taxYear = this.taxYearSelect.value;
+                if (taxYear === '2025') {
+                    this.taxYearDisclaimer.style.display = 'block';
+                    this.taxYearDisclaimer.style.backgroundColor = '#fff8e6';
+                    this.taxYearDisclaimer.style.borderLeftColor = '#ffc107';
+                } else {
+                    this.taxYearDisclaimer.style.display = 'none';
+                }
+            }
+
+            toggleNjFilingStatus() {
+                const selectedState = this.stateSelect.value;
+                if (selectedState === 'NJ') {
+                    this.njFilingStatusGroup.style.display = 'block';
+                } else {
+                    this.njFilingStatusGroup.style.display = 'none';
+                }
+            }
+        }
+
+        // UI Controller
+        class UIController {
+            constructor() {
+                this.previewUpdater = new PreviewUpdater();
+                this.calculator = new PaystubCalculator();
+                this.formManager = new FormManager(() => this.processUpdate());
+                this.setupEventListeners();
+                this.processUpdate();
+            }
+
+            async processUpdate() {
+                try {
+                    const formData = this.formManager.getFormData();
+                    const calculationResults = await this.calculator.calculateAll(formData);
+                    this.previewUpdater.updateAll(calculationResults);
+                } catch (error) {
+                    console.error("Calculation Error:", error);
+                }
+            }
+
+            setupEventListeners() {
+                document.getElementById('download-pdf').addEventListener('click', () => {
+                    const currentStubElement = this.previewUpdater.getCurrentStubElementForPDF();
+                    if (!currentStubElement) {
+                        console.warn("No paystub preview to download.");
+                        return;
+                    }
+
+                    const opt = {
+                        margin: 0.25,
+                        filename: 'paystub.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { 
+                            scale: 2,
+                            useCORS: true, 
+                            logging: false, 
+                            letterRendering: true 
+                        }, 
+                        jsPDF: { 
+                            unit: 'in', 
+                            format: 'letter', 
+                            orientation: 'portrait' 
+                        }
+                    };
+
+                    html2pdf().from(currentStubElement).set(opt).save();
+                });
+
+                document.getElementById('next-stub').addEventListener('click', () => this.previewUpdater.next());
+                document.getElementById('prev-stub').addEventListener('click', () => this.previewUpdater.prev());
+            }
+        }
+
+        // App Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            new UIController();
+        });
+
+    })();
+    </script>
+</body>
+</html>
