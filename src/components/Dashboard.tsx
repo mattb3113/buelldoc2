@@ -11,8 +11,7 @@ import {
   Calendar,
   TrendingUp,
   Clock,
-  AlertCircle,
-  Award
+  AlertCircle
 } from 'lucide-react';
 
 interface User {
@@ -43,6 +42,7 @@ interface DashboardProps {
   onNavigateToPaystub: () => void;
   onNavigateToW2: () => void;
   onNavigateToBankStatement: () => void;
+  onNavigateToCertificates?: () => void;
   onNavigateToDashboard: () => void;
 }
 
@@ -52,7 +52,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   onNavigateToPaystub, 
   onNavigateToW2,
   onNavigateToBankStatement,
-  onNavigateToDashboard 
+  onNavigateToCertificates
 }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -169,18 +169,18 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+              <div className="flex items-center space-x-3 bg-gray-50 rounded-lg px-4 py-2">
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold ring-2 ring-blue-100">
                   {user.avatar}
                 </div>
-                <div className="hidden md:block">
+                <div className="hidden sm:block">
                   <p className="text-sm font-medium text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-500">{user.email}</p>
                 </div>
               </div>
               <button
                 onClick={onLogout}
-                className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden md:inline">Sign Out</span>
@@ -194,6 +194,23 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <div className="lg:w-64">
+            {/* User Profile Section */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                  {user.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs text-gray-500">Member since</p>
+                <p className="text-sm font-medium text-gray-900">{memberSince}</p>
+              </div>
+            </div>
+
             <nav className="bg-white rounded-lg shadow-sm p-4">
               <ul className="space-y-2">
                 <li>
@@ -260,18 +277,48 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex-1">
             {activeTab === 'overview' && (
               <div className="space-y-6">
-                {/* Welcome Section */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                    Welcome back, {user.name}!
-                  </h1>
-                  <p className="text-gray-600">
-                    Member since {memberSince} • Ready to create your next document?
-                  </p>
+                {/* Enhanced User Information Card */}
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg p-8 text-white">
+                  <div className="flex items-center space-x-6">
+                    <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-white border-opacity-30">
+                      {user.avatar}
+                    </div>
+                    <div className="flex-1">
+                      <h1 className="text-3xl font-bold mb-2">
+                        Welcome back, {user.name}!
+                      </h1>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 text-blue-100">
+                        <div className="flex items-center space-x-2">
+                          <User className="h-4 w-4" />
+                          <span>{user.email}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>Member since {memberSince}</span>
+                        </div>
+                      </div>
+                      <p className="mt-3 text-blue-100">
+                        Ready to create your next professional document?
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Account & Stats Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Account Status</p>
+                        <p className="text-lg font-bold text-green-600">Active</p>
+                        <p className="text-xs text-gray-500 mt-1">Since {memberSince}</p>
+                      </div>
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <User className="h-6 w-6 text-green-600" />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="bg-white rounded-lg shadow-sm p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -290,8 +337,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                         <p className="text-sm font-medium text-gray-600">This Month</p>
                         <p className="text-3xl font-bold text-gray-900">{stats.thisMonth}</p>
                       </div>
-                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="h-6 w-6 text-green-600" />
+                      <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <Calendar className="h-6 w-6 text-indigo-600" />
                       </div>
                     </div>
                   </div>
@@ -312,7 +359,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 {/* Quick Actions */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <button
                       onClick={onNavigateToPaystub}
                       className="flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
@@ -345,6 +392,19 @@ const Dashboard: React.FC<DashboardProps> = ({
                         <p className="text-sm text-gray-600">Create professional bank statements</p>
                       </div>
                     </button>
+
+                    {onNavigateToCertificates && (
+                      <button
+                        onClick={onNavigateToCertificates}
+                        className="flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
+                      >
+                        <div className="text-2xl">🎓</div>
+                        <div className="text-left">
+                          <h3 className="font-semibold text-gray-900">Generate Certificate</h3>
+                          <p className="text-sm text-gray-600">Create academic certificates</p>
+                        </div>
+                      </button>
+                    )}
                   </div>
                 </div>
 
